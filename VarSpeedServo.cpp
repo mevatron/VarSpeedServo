@@ -53,7 +53,7 @@
    write(value, speed, wait) - wait is a boolean that, if true, causes the function call to block until move is complete
 
    writeMicroseconds() - Sets the servo pulse width in microseconds
-   read()      - Gets the last written servo pulse width as an angle between 0 and 180.
+   read()      - Gets the last written servo pulse width as an angle between 0 and 400.
    readMicroseconds()  - Gets the last written servo pulse width in microseconds. (was read_us() in first release)
    attached()  - Returns true if there is a servo attached.
    detach()    - Stops an attached servos from pulsing its i/o pin.
@@ -349,8 +349,8 @@ void VarSpeedServo::write(int value)
   if(value < MIN_PULSE_WIDTH)
   {  // treat values less than 544 as angles in degrees (valid values in microseconds are handled as microseconds)
     // updated to use constrain() instead of if(), pva
-    value = constrain(value, 0, 180);
-    value = map(value, 0, 180, SERVO_MIN(),  SERVO_MAX());
+    value = constrain(value, MIN_DEGREES, MAX_DEGREES);
+    value = map(value, MIN_DEGREES, MAX_DEGREES, SERVO_MIN(),  SERVO_MAX());
   }
   this->writeMicroseconds(value);
 }
@@ -406,8 +406,8 @@ void VarSpeedServo::write(int value, uint8_t speed) {
 		if (value < MIN_PULSE_WIDTH) {
 			// treat values less than 544 as angles in degrees (valid values in microseconds are handled as microseconds)
       		// updated to use constrain instead of if, pva
-      		value = constrain(value, 0, 180);
-      		value = map(value, 0, 180, SERVO_MIN(),  SERVO_MAX());
+      		value = constrain(value, MIN_DEGREES, MAX_DEGREES);
+      		value = map(value, MIN_DEGREES, MAX_DEGREES, SERVO_MIN(),  SERVO_MAX());
 		}
 
 		// calculate and store the values for the given channel
@@ -461,7 +461,7 @@ void VarSpeedServo::slowmove(int value, uint8_t speed) {
 
 int VarSpeedServo::read() // return the value as degrees
 {
-  return  map( this->readMicroseconds()+1, SERVO_MIN(), SERVO_MAX(), 0, 180);
+  return  map( this->readMicroseconds()+1, SERVO_MIN(), SERVO_MAX(), MIN_DEGREES, MAX_DEGREES);
 }
 
 int VarSpeedServo::readMicroseconds()
@@ -558,7 +558,7 @@ bool VarSpeedServo::isMoving() {
 	To do
 int VarSpeedServo::targetPosition() {
 	byte channel = this->servoIndex;
-	return map( servos[channel].target+1, SERVO_MIN(), SERVO_MAX(), 0, 180);
+	return map( servos[channel].target+1, SERVO_MIN(), SERVO_MAX(), MIN_DEGREES, MAX_DEGREES);
 }
 
 int VarSpeedServo::targetPositionMicroseconds() {
